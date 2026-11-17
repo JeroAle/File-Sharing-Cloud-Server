@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+accounts.json
+storage/*
+!storage/.gitkeep
+downloads/*
+!downloads/.gitkeep
+results/*
+!results/.gitkeep
