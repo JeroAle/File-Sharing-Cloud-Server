@@ -20,7 +20,7 @@ from analysis import initialize_analysis, record_result
 # private network can connect. All uploaded files go into the storage folder.
 # =============================================================================
 HOST = "0.0.0.0"
-PORT = int(os.environ.get("CNT3004_PORT", "8080"))
+PORT = 5001
 STORAGE_FOLDER = Path(__file__).resolve().parent / "storage"
 ACCOUNT_FILE = Path(__file__).resolve().parent / "accounts.json"
 PASSWORD_ROUNDS = 200_000
@@ -30,10 +30,6 @@ STORAGE_FOLDER.mkdir(exist_ok=True)
 ACTIVE_FILES = set()
 # The lock keeps multiple client threads from changing that set at once.
 ACTIVE_LOCK = threading.Lock()
-
-# These prefixes identify text, audio, and video files on the server.
-FILE_PREFIXES = {".txt": "TS", ".wav": "AU", ".mp4": "VD"}
-
 
 # =============================================================================
 # CREATE DEMONSTRATION USER ACCOUNTS
@@ -86,16 +82,18 @@ def get_safe_path(name):
 
 
 def check_file_name(filename):
-    """Check the TS001.txt, AU001.wav, or VD001.mp4 naming pattern."""
-    extension = Path(filename).suffix.lower()
-    prefix = FILE_PREFIXES.get(extension)
+    
+    ALLOWED_EXTENSIONS = {".txt", ".wav", ".mp4"}
 
-    if prefix:
-        pattern = rf"{prefix}\d{{3}}{re.escape(extension)}"
-        if not re.fullmatch(pattern, Path(filename).name, flags=re.IGNORECASE):
+    def check_file_name(filename):
+        """Allow normal filenames while restricting supported file types."""
+        extension = Path(filename).suffix.lower()
+
+        if extension not in ALLOWED_EXTENSIONS:
             raise ValueError(
-                f"Use a name such as {prefix}001{extension}."
+                "Unsupported file type. Allowed: .txt, .wav, .mp4"
             )
+
 
 
 def send_error(client_socket, message):
