@@ -40,7 +40,7 @@ python client.py
 At the `CloudClient>` prompt, enter:
 
 ```text
-connect SERVER_IP 8080
+connect SERVER_IP 5001
 login
 ```
 
@@ -70,59 +70,3 @@ subfolder create FOLDER_NAME
 subfolder delete FOLDER_NAME
 exit
 ```
-
-Examples using the required type prefixes:
-
-```text
-upload "C:/Project/Samples/notes.txt" TS001.txt
-upload "C:/Project/Samples/audio.wav" AU001.wav
-upload "C:/Project/Samples/video.mp4" VD001.mp4
-dir
-download TS001.txt
-delete TS001.txt
-subfolder create ClassFiles
-subfolder delete ClassFiles
-```
-
-For `.txt`, `.wav`, and `.mp4` uploads, the server checks for the naming pattern `TS001.txt`, `AU001.wav`, or `VD001.mp4`. Other extensions are not assigned these three prefixes by the current code.
-
-Downloads are saved in the client's `downloads/` folder. Uploads are saved in the server's `storage/` folder. If a server filename already exists, the client is asked whether it should be overwritten.
-
-## 6. Performance analysis
-
-The client and server each save measurements in `results/`:
-
-- `client_stats.csv`
-- `server_stats.csv`
-
-The measurements include operation, filename, file size, transfer duration, average transfer speed in MB/s, and response time in milliseconds.
-
-Run this on a computer that has the CSV results:
-
-```bash
-python analysis.py
-```
-
-It prints the saved measurements and creates `results/transfer_performance.png` when upload/download measurements are available. Since each physical computer writes its own local CSV files, copy the CSVs from the server and client computers into one results folder when preparing the final combined analysis.
-
-## 7. Required testing checklist
-
-- [ ] Run the server on one physical computer.
-- [ ] Run Client 1 on a second physical computer.
-- [ ] Run Client 2 on a third physical computer.
-- [ ] Connect all three computers to the same personal hotspot or private wireless network. Do not use Florida Poly Wi-Fi for the project demonstration.
-- [ ] Connect both clients to the server at the same time.
-- [ ] Test login with a valid account and an invalid password.
-- [ ] Upload a 25 MB `.txt` file using a `TS###.txt` name.
-- [ ] Upload a 1 GB `.wav` file using an `AU###.wav` name.
-- [ ] Upload a 2 GB `.mp4` file using a `VD###.mp4` name.
-- [ ] Test the overwrite question.
-- [ ] Download each sample file.
-- [ ] Test deleting an existing file and a file that does not exist.
-- [ ] Test `dir`.
-- [ ] Test creating and deleting a subfolder.
-- [ ] Collect CSV performance data and create the graph.
-
-## Security note
-
-The login process uses salted PBKDF2 and a random challenge with HMAC so the password itself is not sent in clear text. This version does not use TLS to encrypt all network traffic or file contents. Use the private network required by the assignment for your demonstration; TLS would be an additional security improvement.
